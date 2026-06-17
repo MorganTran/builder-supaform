@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en" class="lm">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>The form for perfectionists with deadlines</title>
+  <meta name="title" content="SupaForm Builder - Create Forms Without Code | Free & Open Source" />
+  <meta name="description" content="Build professional forms with our free drag-and-drop form builder. No coding required. Open source, type-safe, and powered by Firebase." />
+  <meta name="keywords" content="form builder, drag and drop, no code, open source, firebase, typescript, form creation, survey builder, free form builder" />
+  <meta name="author" content="SupaForm Contributors" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="theme-color" content="#8b5cf6" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://builder-supaform.web.app/" />
+  <meta property="og:title" content="SupaForm Builder - Create Forms Without Code" />
+  <meta property="og:description" content="Build professional forms with drag-and-drop interface. No coding required. Free, open-source form builder." />
+  <meta property="og:image" content="https://builder-supaform.web.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="SupaForm Builder" />
+  <meta property="og:locale" content="en_US" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://builder-supaform.web.app/" />
+  <meta property="twitter:title" content="SupaForm Builder - Create Forms Without Code" />
+  <meta property="twitter:description" content="Build professional forms with drag-and-drop interface. No coding required." />
+  <meta property="twitter:image" content="https://builder-supaform.web.app/og-image.png" />
+  <meta property="twitter:creator" content="@supaform" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://builder-supaform.web.app/" />
+  
+  <!-- Favicon & Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  
+  <!-- Performance & Resource Hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" />
+  
+  <!-- External Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div id="root">
+    <nav id="nbar" style="visibility: hidden;">
+      <div class="container">
+        <div class="d-flex align-items-center justify-content-between w-100"><a href="/"
+            class="d-flex align-items-center gap-2 logo-header"
+            style="font-size: 1.2rem; font-weight: 700; color: var(--tx);"><svg width="86" height="90"
+              viewBox="0 0 86 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color: rgb(139, 92, 246); stop-opacity: 1;"></stop>
+                  <stop offset="100%" style="stop-color: rgb(59, 130, 246); stop-opacity: 1;"></stop>
+                </linearGradient>
+              </defs>
+              <path
+                d="M92.4503 -0.38897C84.5215 -0.355405 76.5933 -0.299673 68.6649 -0.216353C64.9826 -0.178336 61.3006 -0.147695 57.6181 -0.134438C54.0582 -0.121341 50.4989 -0.088181 46.9392 -0.0416382C44.9336 -0.0204945 42.9279 -0.0196408 40.9222 -0.0192223C32.4455 0.1141 25.7569 1.07236 19.2151 6.74633C18.6983 7.40564 18.1815 8.06495 17.6491 8.74424C17.1143 9.40127 16.5794 10.0583 16.0283 10.7352C12.0463 16.8679 12.3127 22.8011 12.9236 29.8849C13.9834 33.6185 13.9834 33.6185 15.0192 35.8522C14.5156 36.1284 14.0121 36.4046 13.4933 36.6892C7.2239 40.3921 2.50909 45.0177 0.276601 52.0897C-0.326511 61.602 -0.482172 70.1822 5.69117 78.0065C11.9484 84.6866 19.8807 89.0416 28.8958 90.6376C33.5697 90.7171 38.2241 90.6053 42.8941 90.414C40.3906 89.2011 37.8798 88.0408 35.3371 86.9092C29.9393 83.9072 28.3559 78.9718 26.6811 73.2957C26.4996 67.8313 27.3264 62.4111 30.6666 57.9254C36.1676 52.7783 42.433 52.3241 49.6018 52.4896C54.262 52.1932 57.1566 51.7666 60.3139 48.318C62.8612 45.0597 64.964 41.5819 67.0605 38.0214C67.9167 36.9035 67.9167 36.9035 68.7902 35.763C69.9962 33.974 69.9962 33.974 69.9483 30.9744C69.0444 30.9638 68.1406 30.9531 67.2094 30.9422C63.8667 30.9006 60.5241 30.8547 57.1815 30.8059C55.7328 30.7857 54.2841 30.7671 52.8353 30.7503C50.757 30.7259 48.6788 30.6954 46.6005 30.6636C45.3485 30.6469 44.0965 30.6303 42.8065 30.6131C40.045 30.7739 40.045 30.7739 38.9203 29.4697C38.593 25.4428 38.5375 23.9162 40.7763 20.4389C43.6564 20.1784 46.339 20.1019 49.218 20.1439C50.9523 20.128 52.6866 20.11 54.4209 20.0901C57.1542 20.0731 59.8845 20.0708 62.6175 20.1069C77.8482 20.2662 77.8482 20.2662 82.6416 16.6219C84.6318 14.0575 86.1278 11.5778 87.5947 8.68973C88.5553 7.3278 89.5319 5.97681 90.5304 4.64233C92.4822 1.61078 92.4822 1.61078 92.4503 -0.38897Z"
+                fill="url(#grad)"></path>
+            </svg><span>Supaform</span></a>
+          <div class="d-flex align-items-center gap-2"><button
+              class="boc d-flex align-items-center justify-content-center" id="thbtn"
+              style="width: 38px; height: 38px; padding: 0px; border-radius: 12px;" aria-label="Toggle theme"><i
+                class="fa-solid fa-sun" id="suni"></i></button><a class="float-end" aria-label="GitHub repository"
+              href="https://github.com/MorganTran/builder-supaform" target="_blank"><svg height="32" aria-hidden="true"
+                data-component="Octicon" viewBox="0 0 24 24" version="1.1" width="32" data-view-component="true"
+                class="octicon octicon-mark-github">
+                <path
+                  d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943">
+                </path>
+              </svg></a></div>
+        </div>
+      </div>
+    </nav>
+    <section id="hero" class="hero-section" style="visibility: hidden;">
+      <div class="aur aur-a" style="top: -80px; left: -120px;"></div>
+      <div class="aur aur-b" style="top: 180px; right: -180px;"></div>
+      <div class="aur aur-a" style="bottom: -80px; left: 45%;"></div>
+      <div class="container position-relative" style="z-index: 2;">
+        <div class="text-center">
+          <p></p>
+          <h1 class="h1 afu" style="animation-delay: 0.12s;">The form for perfectionists<br>with <span
+              class="gt">deadlines</span></h1>
+          <p class="mx-auto afu"
+            style="max-width: 580px; font-size: clamp(0.95rem, 1.8vw, 1.2rem); color: var(--tx2); margin-bottom: 36px; animation-delay: 0.2s;">
+            Crush your weekend demo deadlines. Our form builder handles the UI so backend developers can focus on the
+            APIs. Always free, no cards, no signup needed.</p>
+          <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap afu"
+            style="animation-delay: 0.28s;"><button class="bgrd btn px-4 py-3 fs-6">Start for Free</button></div>
+        </div>
+      </div>
+    </section>
+    <div style="visibility: hidden;"
+      class="bg-circles w-full opacity-20 pointer-events-none absolute left-0 right-0 top-36 w-full h-36 max-w-xl m-auto z-0">
+      <div class="w-2/6 h-36 radius-full absolute top-1/2 left-0 "
+        style="filter: blur(90px);"></div>
+      <div
+        class="w-2/6 h-36 radius-full absolute top-1/2 left-1/2"
+        style="filter: blur(90px);"></div>
+      <div class="w-2/6 h-36 radius-full absolute top-1/2 right-0"
+        style="filter: blur(90px);"></div>
+    </div>
+    <footer id="foot" style="visibility: hidden;">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 pt-4"
+              style="border-top: 1px solid var(--bd);">
+              <p style="font-size: 0.8rem; color: var(--tx3); margin: 0px;">Design by <a target="_blank"
+                  class="text-primary fw-bold" href="https://themewagon.com/themes/nexusai/">Nexusai theme of
+                  ThemeWagon</a> </p>
+              <div class="d-flex gap-2"><a href="https://www.linkedin.com/in/morgan-tran/" target="_blank"
+                  class="sico"><i class="fa-brands fa-linkedin-in"></i></a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

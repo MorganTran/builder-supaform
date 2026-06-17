@@ -1,0 +1,121 @@
+.su-header {
+    margin-top: 5px;
+}
+
+.logo-header svg {
+    height: 30px;
+    width: 30px;
+}
+
+.logo-header span {
+    margin-left: -12px;
+}
+.su-header .logo-header{
+    padding-top:10px;
+}
+.octicon-mark-github{
+    fill:#FFF
+}
+.lm .octicon-mark-github{
+    fill:#000
+}
+.lm .afu{
+    color:#000
+}
+
+.afu{
+    color:#FFF
+}
+
+.spinner-loading {
+    margin-top: 20%;
+    margin-left: 45%;
+}
+
+.formsu-title {
+    color: #0a1551;
+}
+
+.formsu-title input {
+    width: 100% !important;
+    text-align: center;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid #000;
+    border-radius: 0;
+}
+
+.formsu-title input:hover {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+    cursor: auto;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid #000;
+    border-radius: 0;
+}
+
+.saveStatus-saved {
+    color: #78bb07;
+    font-size: 12px;
+    text-align: center;
+}
+
+.secondaryHeader {
+    background: linear-gradient(270deg, #ff6100 0%, #ffb841 99.97%);
+    text-align: center;
+}
+
+.secondaryHeader .nav-tabs .nav-link {
+    color: #FFFFFF;
+    border-radius: 0;
+    border: 0
+}
+
+.secondaryHeader .nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.copy-btn {
+    top: 0px;
+    right: 0px;
+}
+
+.share-with-url-header {
+    font-size: 11px;
+    padding: 6px;
+    border-radius: 4px;
+    text-overflow: ellipsis;
+    color: rgb(111, 118, 167);
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.share-with-url-header span {
+    text-wrap: nowrap;
+    width: 95%;
+    overflow: hidden;
+}
+
+.share-with-url-header .copy-btn {
+    padding: 1px;
+    border: 0;
+    top: 3px;
+}
+
+.hero-container {
+    background: #e8f2fd;
+}
+
+.tpt-list-container {
+    background: #e8f2fd;
+}
+
+.github-icon{
+    margin-top: 8px;
+}
