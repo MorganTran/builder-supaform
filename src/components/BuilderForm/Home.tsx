@@ -4,7 +4,7 @@ import { Header } from './Header.tsx'
 import { Setting } from './Setting.tsx'
 import { Preview } from './Preview.tsx'
 import { uploadFileJson } from '../../firebase.ts'
-import { type FormSu, FormSuSchema } from '../../types/Form.ts'
+import { type FormSu, FormSuSchema, type DeepPartial } from '../../types/Form.ts'
 import { PATH_FORM_STORAGE, PATH_TEMPLATE_STORAGE, EVENT_FORMSUSCHEMACHANGE, EVENT_FORMSUSCHEMACHANGESUCCESSFULLY } from '../../types/Consts.ts'
 
 interface HomeProps {
@@ -12,7 +12,7 @@ interface HomeProps {
   formId: string
 }
 
-async function updateForm(form: FormSu, formId: string): Promise<string> {
+export async function updateForm(form: FormSu, formId: string): Promise<string> {
   const jsStr = JSON.stringify(form);
   let fileName = PATH_FORM_STORAGE + formId + ".json"
   if(form.meta.form_su == 'template'){
@@ -24,9 +24,22 @@ async function updateForm(form: FormSu, formId: string): Promise<string> {
   return formId
 }
 
+export function mergeFormUpdate(form: FormSu, update: DeepPartial<FormSu>): FormSu {
+  const result = structuredClone(form);
+  const meta = update.meta;
+  if (meta) {
+    result.meta = { ...result.meta, ...meta, updated_at: new Date().toISOString() };
+  } else {
+    result.meta = { ...result.meta, updated_at: new Date().toISOString() };
+  }
+  delete update.meta // Don't double-merge
+  Object.assign(result, update);
+  return result;
+}
+
 let envChange: () => void = () => { }
 
-const HomeBuildForm: FC<HomeProps> = ({ form, formId }) => {
+export const HomeBuildForm: FC<HomeProps> = ({ form, formId }) => {
   const timerAutoFrom = useRef(0)
   const [activeMode, setActiveMode] = useState<string | null>('build');
 
@@ -46,19 +59,11 @@ const HomeBuildForm: FC<HomeProps> = ({ form, formId }) => {
       const customEvent = event as CustomEvent
 
       clearTimeout(timerAutoFrom.current)
-      const _form = customEvent.detail
-      timerAutoFrom.current = setTimeout(async () => {
-        const meta = _form?.meta;
-        if (meta) {
-          Object.assign(meta, { "updated_at": (new Date()).toISOString() });
-          Object.assign(form.meta, meta); // merge once time for meta
-          delete _form.meta; // delete to meta without mergine below again.
-        } else {
-          // if having updating other field like form "components" property
-          Object.assign(form.meta, { "updated_at": (new Date()).toISOString() });
-        }
 
-        Object.assign(form, _form)
+      timerAutoFrom.current = setTimeout(async () => {
+        const result = mergeFormUpdate(form, customEvent.detail)
+
+        Object.assign(form, result)
 
         await updateForm(FormSuSchema.parse(form), formId)
         window.dispatchEvent(new CustomEvent(EVENT_FORMSUSCHEMACHANGESUCCESSFULLY, { detail: form }));
@@ -96,5 +101,3 @@ const HomeBuildForm: FC<HomeProps> = ({ form, formId }) => {
     </>
   )
 }
-
-export default HomeBuildForm
