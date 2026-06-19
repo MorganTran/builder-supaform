@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { updateForm, mergeFormUpdate } from './Home.tsx';
+import { updateForm, mergeFormUpdate } from './Services.ts';
 import * as firebase from '../../firebase.ts';
 import { type FormSu } from '../../types/Form.ts';
 import { PATH_FORM_STORAGE, PATH_TEMPLATE_STORAGE, INIT_FORM_DEFINITION } from '../../types/Consts.ts';
@@ -65,7 +65,7 @@ describe('mergeFormUpdate', () => {
         const form: FormSu = structuredClone(INIT_FORM_DEFINITION);
         const updated = mergeFormUpdate(form, { components: [{ type: 'text' }] });
 
-        expect(new Date(updated.meta.updated_at).getTime() / 10000).toEqual((new Date()).getTime() / 10000);
+        expect((new Date(updated.meta.updated_at).getTime() / 10000).toFixed()).toEqual((((new Date()).getTime() / 10000).toFixed()));
         expect(updated.components).toEqual([{ type: 'text' }]);
     });
 

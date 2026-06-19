@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { HomeBuildForm } from './components/BuilderForm/Home.tsx'
-import HomeBuilderTemplateForm from './components/BuilderTemplateForm/Home.tsx'
+import { HomeBuilderTemplateForm } from './components/BuilderTemplateForm/Home.tsx'
 import { loginAnonymously, fetchJsonFromStorage, listFilesAndGetContentWithPagination } from './firebase.ts'
 import { type User } from 'firebase/auth';
 import { type FormSu, FormSuSchema, type TemplateSu, TemplateSuSchema } from './types/Form.ts'
