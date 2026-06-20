@@ -229,7 +229,7 @@ a {
 }
 /* HERO */
 #hero {
-  min-height: 100vh;
+  min-height: 105vh;
   padding-top: var(--nav);
   overflow: hidden;
   position: relative;

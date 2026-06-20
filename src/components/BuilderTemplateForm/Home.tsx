@@ -9,11 +9,10 @@ import { type User } from 'firebase/auth';
 
 interface HomeBuilderTemplateFormProps {
   user: User,
-  templates: TemplateSu[],
   onCreatedNewForm: (_form: FormSu, fr_id: string) => void;
 }
 
-export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({ user, templates, onCreatedNewForm }) => {
+export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({ user, onCreatedNewForm }) => {
   const handleChooseMakeAFreshForm = useCallback((): void => {
     const form: FormSu = FormSuSchema.parse(JSON.parse(JSON.stringify(INIT_FORM_DEFINITION)))
 
@@ -43,7 +42,7 @@ export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({
         <div className="w-2/6 h-36 radius-full absolute top-1/2 left-1/2 transform -translate-y-18 -translate-x-1/2 bg-ai-default" style={{ filter: "blur(90px)" }}></div>
         <div className="w-2/6 h-36 radius-full absolute top-1/2 right-0 transform -translate-y-18 bg-pdf-default" style={{ filter: "blur(90px)" }}></div>
       </div>
-      <TemplateList templates={templates} onChooseMakeAFreshFormFromTemplate={handleUseTemplateToCreateForm} onChooseMakeAFreshForm={handleChooseMakeAFreshForm} onChooseMakeAFreshTemplate={handleChooseMakeAFreshTemplate} />
+      <TemplateList onChooseMakeAFreshFormFromTemplate={handleUseTemplateToCreateForm} onChooseMakeAFreshForm={handleChooseMakeAFreshForm} onChooseMakeAFreshTemplate={handleChooseMakeAFreshTemplate} />
       <footer id="foot">
         <div className="container-fluid">
           <div className="row">
