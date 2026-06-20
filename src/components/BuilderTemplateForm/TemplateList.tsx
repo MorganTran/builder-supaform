@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState, useRef, type FC, memo, type ReactNode } from 'react';
 import { listFilesAndGetContentWithPagination } from '../../firebase.ts'
 import TemplateCard from './TemplateCard.tsx'
-import { type TemplateSu, TemplateSuSchema, FormSuSchema } from '../../types/Form.ts'
+import { createNewForm, createNewTemplate } from './Services.ts'
+import { type TemplateSu, TemplateSuSchema, FormSuSchema, type FormSu } from '../../types/Form.ts'
 import { PATH_TEMPLATE_STORAGE } from '../../types/Consts.ts'
+import { INIT_FORM_DEFINITION, INIT_TEMPLATEFORM_DEFINITION } from '../../types/Consts.ts'
+import { loginAnonymously } from '../../firebase.ts'
 
 interface TemplateListProps {
-  onChooseMakeAFreshFormFromTemplate: (template: TemplateSu) => void,
-  onChooseMakeAFreshForm: () => void;
-  onChooseMakeAFreshTemplate: () => void;
 }
 
-export const TemplateList: FC<TemplateListProps> = memo(({ onChooseMakeAFreshFormFromTemplate, onChooseMakeAFreshForm, onChooseMakeAFreshTemplate }) => {
+export const TemplateList: FC<TemplateListProps> = memo(({ }) => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [templates, setTemplates] = useState<TemplateSu[] | null>(null);
   const sectionDomRef = useRef(null)
   useEffect(() => {
@@ -39,6 +40,7 @@ export const TemplateList: FC<TemplateListProps> = memo(({ onChooseMakeAFreshFor
 
             const _templates: TemplateSu[] = await fetchTemplates()
             setTemplates(_templates)
+            setLoading(false)
             observer.unobserve(entry.target);
           }
         });
@@ -50,30 +52,52 @@ export const TemplateList: FC<TemplateListProps> = memo(({ onChooseMakeAFreshFor
 
     })()
   }, []);
-  const handleCreateAFreshFormFromTemplate = useCallback((_template: TemplateSu): void => {
-    onChooseMakeAFreshFormFromTemplate(_template)
-  }, []);
+  const handleChooseMakeAFreshForm = useCallback(async (): Promise<void> => {
+    setLoading(true)
+    const user = await loginAnonymously()
+    if (user) {
+      const form: FormSu = FormSuSchema.parse(JSON.parse(JSON.stringify(INIT_FORM_DEFINITION)))
 
-  const handleCreateAForm = useCallback((): void => {
-    onChooseMakeAFreshForm()
-  }, []);
-  const handleCreateATemplate = useCallback((): void => {
-    onChooseMakeAFreshTemplate()
-  }, []);
+      const fr_id = await createNewForm(form, user.uid)
+      // window.history.pushState({}, "", "/" + _fr_id);
+      window.location.pathname = "/" + fr_id
+    }
+  }, [])
+  const handleChooseMakeAFreshTemplate = useCallback(async (): Promise<void> => {
+    setLoading(true)
+    const user = await loginAnonymously()
+    if (user) {
+      const form: FormSu = FormSuSchema.parse(JSON.parse(JSON.stringify(INIT_TEMPLATEFORM_DEFINITION)))
 
-  let listEl: (ReactNode | null)[] = [<div className="spinner-grow text-primary spinner-loading" role="status">
+      const fr_id = await createNewTemplate(form, user.uid)
+      // window.history.pushState({}, "", "/" + _fr_id);
+      window.location.pathname = "/" + fr_id
+    }
+  }, [])
+  const handleUseTemplateToCreateForm = useCallback(async (template: TemplateSu): Promise<void> => {
+    setLoading(true)
+    const user = await loginAnonymously()
+    if (user) {
+      const _form = JSON.parse(JSON.stringify(template.form));
+      _form.meta.form_su = 'normal'
+      const form: FormSu = FormSuSchema.parse(_form);
+
+      const fr_id = await createNewForm(form, user.uid);
+      // window.history.pushState({}, "", "/" + _fr_id);
+      window.location.pathname = "/" + fr_id
+    }
+  }, [])
+
+  let listEl: (ReactNode | null)[] = loading ? [<div key="loading" className="spinner-grow text-primary spinner-loading" role="status">
     <span className="sr-only"></span>
-  </div>]
+  </div>] : templates ? templates.map((template) => {
+    if (template.form.meta.published) {
+      return <TemplateCard key={template.template_id} template={template} onUseTemplate={handleUseTemplateToCreateForm} />
+    } else {
+      return null
+    }
+  }) : []
 
-  if (templates) {
-    listEl = templates.map((template) => {
-      if (template.form.meta.published) {
-        return <TemplateCard key={template.template_id} template={template} onUseTemplate={handleCreateAFreshFormFromTemplate} />
-      } else {
-        return null
-      }
-    })
-  }
 
   return (
     <section id="templates" ref={sectionDomRef} className="sp" style={{ background: "var(--bg2)" }}>
@@ -82,11 +106,11 @@ export const TemplateList: FC<TemplateListProps> = memo(({ onChooseMakeAFreshFor
           <h2 className="stitle">Free Online <span className="gt">Form Templates</span></h2>
           <p className="ssub mx-auto"><span className="gt">Supaform</span> offer a selection of free-form templates available online.
             If you can't find a template that fits your needs,
-            click <a className="gt" href="" onClick={(e) => { e.preventDefault(); handleCreateAForm(); }}>
+            click <a className="gt" href="" onClick={(e) => { e.preventDefault(); handleChooseMakeAFreshForm(); }}>
               here
             </a> to
             create a new empty form.</p>
-          {(window.location + "").startsWith("http://localhost") && <button type="button" className="btn btn-primary" onClick={handleCreateATemplate}><i className="bi bi-plus"></i>Create A Template</button>}
+          {(window.location + "").startsWith("http://localhost") && <button type="button" className="btn btn-primary" onClick={handleChooseMakeAFreshTemplate}><i className="bi bi-plus"></i>Create A Template</button>}
         </div>
         <div className='row g-3'>
           {listEl}

@@ -1,38 +1,11 @@
-import { useCallback, type FC, memo } from 'react'
+import { type FC, memo } from 'react'
 import { Header } from './Header.tsx'
 import { TemplateList } from './TemplateList.tsx'
-import { createNewForm, createNewTemplate } from './Services.ts'
 import HeroSection from './HeroSection.tsx'
-import { FormSuSchema, type FormSu, type TemplateSu } from '../../types/Form.ts'
-import { INIT_FORM_DEFINITION, INIT_TEMPLATEFORM_DEFINITION } from '../../types/Consts.ts'
-import { type User } from 'firebase/auth';
 
-interface HomeBuilderTemplateFormProps {
-  user: User,
-  onCreatedNewForm: (_form: FormSu, fr_id: string) => void;
-}
+interface HomeBuilderTemplateFormProps {}
 
-export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({ user, onCreatedNewForm }) => {
-  const handleChooseMakeAFreshForm = useCallback((): void => {
-    const form: FormSu = FormSuSchema.parse(JSON.parse(JSON.stringify(INIT_FORM_DEFINITION)))
-
-    const fr_id = createNewForm(form, user.uid)
-    onCreatedNewForm(form, fr_id)
-  }, [])
-  const handleChooseMakeAFreshTemplate = useCallback((): void => {
-    const form: FormSu = FormSuSchema.parse(JSON.parse(JSON.stringify(INIT_TEMPLATEFORM_DEFINITION)))
-
-    const fr_id = createNewTemplate(form, user.uid)
-    onCreatedNewForm(form, fr_id)
-  }, [])
-  const handleUseTemplateToCreateForm = useCallback((template: TemplateSu): void => {
-    const _form = JSON.parse(JSON.stringify(template.form));
-    _form.meta.form_su = 'normal'
-    const form: FormSu = FormSuSchema.parse(_form);
-
-    const fr_id = createNewForm(form, user.uid);
-    onCreatedNewForm(form, fr_id);
-  }, [])
+export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({ }) => {
   return (
     <>
       <Header />
@@ -42,7 +15,7 @@ export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({
         <div className="w-2/6 h-36 radius-full absolute top-1/2 left-1/2 transform -translate-y-18 -translate-x-1/2 bg-ai-default" style={{ filter: "blur(90px)" }}></div>
         <div className="w-2/6 h-36 radius-full absolute top-1/2 right-0 transform -translate-y-18 bg-pdf-default" style={{ filter: "blur(90px)" }}></div>
       </div>
-      <TemplateList onChooseMakeAFreshFormFromTemplate={handleUseTemplateToCreateForm} onChooseMakeAFreshForm={handleChooseMakeAFreshForm} onChooseMakeAFreshTemplate={handleChooseMakeAFreshTemplate} />
+      <TemplateList />
       <footer id="foot">
         <div className="container-fluid">
           <div className="row">
