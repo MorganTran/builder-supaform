@@ -10,21 +10,25 @@
 .logo-header span {
     margin-left: -12px;
 }
-.su-header .logo-header{
-    padding-top:10px;
-}
-.octicon-mark-github{
-    fill:#FFF
-}
-.lm .octicon-mark-github{
-    fill:#000
-}
-.lm .afu{
-    color:#000
+
+.su-header .logo-header {
+    padding-top: 10px;
 }
 
-.afu{
-    color:#FFF
+.octicon-mark-github {
+    fill: #FFF
+}
+
+.lm .octicon-mark-github {
+    fill: #000
+}
+
+.lm .afu {
+    color: #000
+}
+
+.afu {
+    color: #FFF
 }
 
 .spinner-loading {
@@ -116,6 +120,25 @@
     background: #e8f2fd;
 }
 
-.github-icon{
+.github-icon {
     margin-top: 8px;
+}
+
+.cont-img-tpl {
+    overflow: hidden;
+    height: 180px;
+    margin-bottom: 15px;
+}
+
+.description-tpl {
+    font-size: 0.875rem;
+    color: var(--tx2);
+    height: 100px;
+    overflow: hidden;
+}
+
+.img-tpl {
+    object-fit: cover;
+    height: 100%;
+    border-radius: 5px;
 }

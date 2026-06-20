@@ -22,16 +22,15 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
     return (
         <div className="col-md-3 rv in">
             <div className="gc p-2 h-100">
-                <div style={{ overflow: 'hidden', height: '180px' }}>
+                <div className="cont-img-tpl">
                     <img
                         src={template.form.meta.thumbnail_url}
                         alt={template.form.meta.display_name}
-                        className="card-img-top"
-                        style={{ objectFit: 'cover', height: '100%' }}
+                        className="card-img-top img-tpl"
                     />
                 </div>
                 <h3 className="text-center fs-5 fw-semibold mb-2">{template.form.meta.display_name}</h3>
-                <p style={{ fontSize: ".875rem", color: "var(--tx2)" }}>{template.form.meta.description}</p>
+                <p className="description-tpl">{template.form.meta.description}</p>
 
                 <div className='d-flex align-items-center justify-content-center gap-3 flex-wrap afu'>
                     <button
