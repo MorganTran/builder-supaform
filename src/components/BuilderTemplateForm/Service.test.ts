@@ -24,24 +24,24 @@ describe('Form Factory Functions', () => {
   })
 
   describe('createNewForm', () => {
-    it('generates ID with PREFIX_FORM_ID + timestamp + userId', () => {
+    it('generates ID with PREFIX_FORM_ID + timestamp + userId', async () => {
       const form = getValidFormStub()
-      const id = createNewForm(form, mockUserId)
+      const id = await createNewForm(form, mockUserId)
 
       expect(id).contain('user123')
     })
 
-    it('sets both created_at and updated_at to ISO string', () => {
+    it('sets both created_at and updated_at to ISO string', async () => {
       const form = getValidFormStub()
-      createNewForm(form, mockUserId)
+      await createNewForm(form, mockUserId)
 
       expect(form.meta.created_at).toBe('2026-06-19T10:00:00.000Z')
       expect(form.meta.updated_at).toBe('2026-06-19T10:00:00.000Z')
     })
 
-    it('uploads JSON to correct path: PATH_FORM_STORAGE + id + .json', () => {
+    it('uploads JSON to correct path: PATH_FORM_STORAGE + id + .json', async () => {
       const form = getValidFormStub()
-      const id = createNewForm(form, mockUserId)
+      const id = await createNewForm(form, mockUserId)
 
       expect(firebase.uploadFileJson).toHaveBeenCalledWith(
         JSON.stringify(form),
@@ -49,9 +49,9 @@ describe('Form Factory Functions', () => {
       )
     })
 
-    it('returns the generated ID', () => {
+    it('returns the generated ID', async () => {
       const form = getValidFormStub()
-      const id = createNewForm(form, mockUserId)
+      const id = await createNewForm(form, mockUserId)
 
       expect(id).toBeDefined()
       expect(typeof id).toBe('string')
@@ -60,16 +60,16 @@ describe('Form Factory Functions', () => {
   })
 
   describe('createNewTemplate', () => {
-    it('generates ID with PREFIX_TEMPLATE_ID + timestamp + userId', () => {
+    it('generates ID with PREFIX_TEMPLATE_ID + timestamp + userId', async () => {
       const form = getValidTemplateStub()
-      const id = createNewTemplate(form, mockUserId)
+      const id = await createNewTemplate(form, mockUserId)
 
       expect(id).contain('user123')
     })
 
-    it('uploads to PATH_TEMPLATE_STORAGE path', () => {
+    it('uploads to PATH_TEMPLATE_STORAGE path', async () => {
       const form = getValidTemplateStub()
-      const id = createNewTemplate(form, mockUserId)
+      const id = await createNewTemplate(form, mockUserId)
 
       expect(firebase.uploadFileJson).toHaveBeenCalledWith(
         JSON.stringify(form),
@@ -79,15 +79,15 @@ describe('Form Factory Functions', () => {
   })
 
   describe('ID uniqueness (regression)', () => {
-    it('creates different IDs when called multiple times (timestamps differ)', () => {
+    it('creates different IDs when called multiple times (timestamps differ)', async () => {
       const form1 = getValidFormStub()
       const form2 = getValidFormStub()
 
-      const id1 = createNewForm(form1, mockUserId)
-      
+      const id1 = await createNewForm(form1, mockUserId)
+
       vi.advanceTimersByTime(1) // advance clock
-      
-      const id2 = createNewForm(form2, mockUserId)
+
+      const id2 = await createNewForm(form2, mockUserId)
 
       expect(id1).not.toBe(id2)
     })
