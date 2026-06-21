@@ -7,10 +7,8 @@ import { PATH_TEMPLATE_STORAGE } from '../../types/Consts.ts'
 import { INIT_FORM_DEFINITION, INIT_TEMPLATEFORM_DEFINITION } from '../../types/Consts.ts'
 import { loginAnonymously } from '../../firebase.ts'
 
-interface TemplateListProps {
-}
 
-export const TemplateList: FC<TemplateListProps> = memo(({ }) => {
+export const TemplateList: FC = memo(() => {
   const [loading, setLoading] = useState<boolean>(true);
   const [templates, setTemplates] = useState<TemplateSu[] | null>(null);
   const sectionDomRef = useRef(null)
@@ -88,7 +86,7 @@ export const TemplateList: FC<TemplateListProps> = memo(({ }) => {
     }
   }, [])
 
-  let listEl: (ReactNode | null)[] = loading ? [<div key="loading" className="spinner-grow text-primary spinner-loading" role="status">
+  const listEl: (ReactNode | null)[] = loading ? [<div key="loading" className="spinner-grow text-primary spinner-loading" role="status">
     <span className="sr-only"></span>
   </div>] : templates ? templates.map((template) => {
     if (template.form.meta.published) {

@@ -3,9 +3,7 @@ import { Header } from './Header.tsx'
 import { TemplateList } from './TemplateList.tsx'
 import HeroSection from './HeroSection.tsx'
 
-interface HomeBuilderTemplateFormProps {}
-
-export const HomeBuilderTemplateForm: FC<HomeBuilderTemplateFormProps> = memo(({ }) => {
+export const HomeBuilderTemplateForm: FC = memo(() => {
   return (
     <>
       <Header />

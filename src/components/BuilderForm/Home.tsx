@@ -9,11 +9,9 @@ import { PATH_FORM_STORAGE, PATH_TEMPLATE_STORAGE, PREFIX_TEMPLATE_ID, EVENT_FOR
 import { type User } from 'firebase/auth';
 import { fetchJsonFromStorage, loginAnonymously } from '../../firebase.ts'
 
-interface HomeProps { }
-
 let envChange: () => void = () => { }
 
-export const HomeBuildForm: FC<HomeProps> = ({ }) => {
+export const HomeBuildForm: FC = () => {
   const [pageType, setPageType] = useState<string>('loading');
   const [form, setForm] = useState<FormSu | null>(null);
   const [formId, setFormId] = useState<string | null>(null);
