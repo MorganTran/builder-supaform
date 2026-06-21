@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { HomeBuildForm } from './components/BuilderForm/Home.tsx'
 import { HomeBuilderTemplateForm } from './components/BuilderTemplateForm/Home.tsx'
+import { FeedbackPanel } from './components/FeedbackPanel/FeedbackPanel.tsx'
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
   return (
     <>
       {page}
+      <FeedbackPanel />
     </>
   )
 }

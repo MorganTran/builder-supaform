@@ -2,6 +2,7 @@ import { type FormSu } from './Form.ts'
 
 export const PATH_FORM_STORAGE = "forms/"
 export const PATH_TEMPLATE_STORAGE = "templates/"
+export const PATH_FEEDBACK_STORAGE = "feedback/"
 export const PREFIX_FORM_ID = "fr_"
 export const PREFIX_TEMPLATE_ID = "tp_"
 

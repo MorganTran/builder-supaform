@@ -28,9 +28,17 @@ export const TemplateSuSchema = z.object({
     form: FormSuSchema
 })
 
+export const FeedbackFormSchema = z.object({
+    email: z.string().optional(),
+    feedback: z.string(),
+    updated_at: z.string(),
+    created_at: z.string()
+});
+
 export type Meta = z.infer<typeof MetaSchema>;
 export type FormSu = z.infer<typeof FormSuSchema>;
 export type TemplateSu = z.infer<typeof TemplateSuSchema>;
+export type FeedbackSu = z.infer<typeof FeedbackFormSchema>;
 export interface FileContent {
   name: string;
   fullPath: string;
