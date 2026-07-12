@@ -42,6 +42,17 @@ export const uploadFileJson = async (jsonString: string, fileName: string) => {
     }
 };
 
+export const uploadFilePDF = async (blob: Blob|File, fileName: string) => {
+    try {
+        const storageRef = ref(storage, fileName);
+
+        await uploadBytes(storageRef, blob);
+
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 export const fetchJsonFromStorage = async (fileName: string) => {
     try {
         const fileRef = ref(storage, fileName);

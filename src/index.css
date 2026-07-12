@@ -151,3 +151,64 @@
 .panel-feedback{
     margin-top:70px;
 }
+
+.pdf-builder-container {
+    height: 85vh;
+}
+
+.pdf-builder-container>div {
+    height: 85vh;
+}
+
+div[data-epdf-i="main-toolbar"] {
+    display: none;
+}
+
+/* PDFUploader.css */
+.pdf-uploader {
+    max-width: 162px;
+    margin: 20% auto;
+}
+
+.pdf-uploader h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.pdf-uploader input[type='file'] {
+    display: block;
+    margin: 15px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pdf-uploader input[type='file']:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.pdf-uploader p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.pdf-uploader .error {
+    color: #d32f2f;
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.pdf-uploader .success {
+    color: #388e3c;
+    background-color: #e8f5e9;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.container-field-list button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}

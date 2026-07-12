@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef, type FC, useEffect } from 'react'
-import { FormBuilder, type FormType, type FormSource, type Submission } from '@formio/react';
+import { type FormType, type FormSource, type Submission } from '@formio/react';
 import { Header } from './Header.tsx'
 import { Setting } from './Setting.tsx'
 import { Preview } from './Preview.tsx'
+import FormBuilderIO from './FormBuilderIO.tsx'
+import PDFBuilder from '../PDFBuilder/PDFBuilder.tsx'
 import { updateForm, mergeFormUpdate } from './Services.ts'
 import { type FormSu, FormSuSchema } from '../../types/Form.ts'
 import { PATH_FORM_STORAGE, PATH_TEMPLATE_STORAGE, PREFIX_TEMPLATE_ID, EVENT_FORMSUSCHEMACHANGE, EVENT_FORMSUSCHEMACHANGESUCCESSFULLY } from '../../types/Consts.ts'
@@ -97,10 +99,10 @@ export const HomeBuildForm: FC = () => {
           const result = mergeFormUpdate(form, customEvent.detail)
 
           Object.assign(form, result)
-
+          setForm({... form})
           await updateForm(FormSuSchema.parse(form), formId)
           window.dispatchEvent(new CustomEvent(EVENT_FORMSUSCHEMACHANGESUCCESSFULLY, { detail: form }));
-        }, 2000)
+        }, 1000)
 
       }
       window.addEventListener(EVENT_FORMSUSCHEMACHANGE, envChange);
@@ -137,11 +139,12 @@ export const HomeBuildForm: FC = () => {
           <div className="container-fluid">
             <div className="row"><p></p></div>
             <div className="row"><div className='col'>
-              {activeMode == 'build' ? <FormBuilder initialForm={form as unknown as FormSource} onChange={handleChangeJsonBuilder} /> : null}
+              {activeMode == 'build' && form ? <FormBuilderIO initialForm={form as unknown as FormSource} onChange={handleChangeJsonBuilder} /> : null}
               {activeMode == 'setting' ? <Setting onChangeSetting={handleChangeSettingForm} meta={form.meta} /> : null}
-              {activeMode == 'preview' ? <Preview formId={formId} form={form} /> : null}
+              {activeMode == 'preview' && form ? <Preview formId={formId} form={form} /> : null}
             </div></div>
           </div>
+          {activeMode == 'pdf-build' ? <div className="container-fluid"><PDFBuilder form={form} formId={formId} /></div> : null}
         </>
       }
       break;

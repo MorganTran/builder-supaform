@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_ENDPOINT_GITHUT_SRC: string
   readonly VITE_ENDPOINT_LINKEDIN: string
   readonly VITE_ENDPOINT_FORMJSON: string
+  readonly VITE_ENDPOINT_PDF: string
 }
 
 interface ImportMeta {

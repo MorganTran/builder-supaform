@@ -11,17 +11,22 @@
     "test": "vitest --inspect-brk --no-file-parallelism"
   },
   "dependencies": {
+    "@embedpdf/react-pdf-viewer": "^2.14.4",
     "@formio/js": "^5.4.0",
     "@formio/react": "^6.2.1",
     "firebase": "^12.14.0",
+    "lodash": "^4.18.1",
     "moment": "^2.30.1",
+    "pdf-lib": "^1.17.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-syntax-highlighter": "^16.1.1",
+    "uuid": "^14.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/lodash": "^4.17.24",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

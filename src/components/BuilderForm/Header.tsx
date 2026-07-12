@@ -101,6 +101,10 @@ export const Header: FC<HeaderProps> = memo(({ form, onChangeModeOfFormBuilder }
                 <a className={`nav-link ${activeButton === 'build' ? 'active' : ''
                   }`} href="#" onClick={(e) => { e.preventDefault(); handleButtonClick('build') }}>Build</a>
               </li>
+              <li className={`nav-item`}>
+                <a className={`nav-link ${activeButton === 'pdf-build' ? 'active' : ''
+                  }`} href="#" onClick={(e) => { e.preventDefault(); handleButtonClick('pdf-build') }}>Build PDF</a>
+              </li>
               {form.meta.form_su == 'template' && <li className={`nav-item`}>
                 <a className={`nav-link ${activeButton === 'setting' ? 'active' : ''
                   }`} href="#" onClick={(e) => { e.preventDefault(); handleButtonClick('setting') }}>Setting Template</a>

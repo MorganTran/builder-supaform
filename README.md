@@ -165,6 +165,19 @@ npm run lint -- --fix
                       && request.resource.size < 300 * 1024        // Size under 300KB
                       && request.resource.contentType == 'application/json'; // Must be JSON format
         }
+
+        // Rules for the "/pdfs" directory
+        match /pdfs/{allFiles=**} {
+          
+          // 3/ Allow read PDF files into "/pdfs" public for everyone
+          // (Enforces that the retrieved file is a PDF)
+          allow read: if request.auth == null || request.auth != null; 
+          
+          // 2/ Allow writing PDF files into "/pdfs" with specific constraints
+          allow write: if request.auth != null                      // Must be authenticated
+                      && request.resource.size < 30 * 1024 * 1024        // Size under 30MB
+                      && request.resource.contentType == 'application/pdf'; // Must be PDF format
+        }
         
         // Rules for the "/templates" directory
         match /templates/{allFiles=**} {
