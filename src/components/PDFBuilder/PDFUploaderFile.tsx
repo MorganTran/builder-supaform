@@ -110,7 +110,7 @@ const PDFUploader: FC<PDFUploaderProps> = ({ formId, onUploadNewPDF }) => {
                     </>
                 ) : (
                     <>
-                        <i className="bi bi-upload me-2"></i> {/* Optional: Bootstrap Icon */}
+                        <i className="bi bi-upload me-2"></i>
                         Upload PDF
                     </>
                     )}
