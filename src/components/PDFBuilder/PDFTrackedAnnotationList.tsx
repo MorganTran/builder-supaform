@@ -8,6 +8,7 @@ import {
     LockModeType
 } from '@embedpdf/react-pdf-viewer'
 import { type AnnotationApi, type ScrollApi } from '../../types/PdfPlugin.ts'
+import Tooltip from '../Tooltip.tsx'
 
 interface FieldsListProps {
     registryPDFViewer: PluginRegistry
@@ -51,12 +52,10 @@ const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer 
 
         cleanups.push(annotationPlugin.onAnnotationEvent((event) => {
             if (
-                event.type === 'create' ||
-                event.type === 'delete' ||
-                event.type === 'loaded'
+                event.type != 'loaded'
             ) {
                 const annotations = annotationPlugin.getAnnotations()
-                console.log("annotations", annotations)
+                // console.log("annotations", annotations)
                 setAnnotations(annotations)
             }
         }))
@@ -77,42 +76,54 @@ const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer 
     }, [])
 
     const handleRemovedAllTrackedAnnotation = useCallback(async () => {
-        if (confirm("Are you sure you want to delete all annotations? You won't be able to roll back or recover them after this."))
+        if (confirm("Are you sure you want to delete all annotations? You won't be able to roll back or recover them after this.") === true)
             annotationApiRef.current?.deleteAllAnnotations()
     }, [])
 
     const handleSearch = useCallback((ev: ChangeEvent<HTMLInputElement>) => {
         let _key = ev.target.value
         setKeysearch(_key)
-        // let result: TrackedAnnotation[] = _annotations.filter((_annotation: TrackedAnnotation) => {
-        //     let field: PdfWidgetAnnoObject = _annotation.object as unknown as PdfWidgetAnnoObject
-        //     let name: string = field.contents ? field.contents : field?.field.name
-        //     return name.indexOf(_key) > -1
-        // })
+    }, [])
 
-        // setAnnotations(result)
+    const handleClearSearch = useCallback(() => {
+        setKeysearch('')
     }, [])
 
     return (
         <div className='container-annotation-list'>
-            {_annotations.length > 0 && <input type="text" onChange={handleSearch} value={_keysearch} placeholder='Search by field key' />}
-            <p>Annotations:
-                {_annotations.length > 0 && <button className="btn btn-outline-danger" onClick={handleRemovedAllTrackedAnnotation}>Remove All</button>}
-            </p>
-            {_annotations.length > 0 ? _annotationsFilteredList.map((_annotation) => {
-                let field = _annotation.object as unknown as PdfWidgetAnnoObject
-                return <button key={field.id} className="btn btn-outline-secondary position-relative" onClick={() => {
-                    handleSelectedTrackedAnnotation(_annotation)
-                }}>
-                    {field.contents ? field.contents : field?.field.name}
-                    {"(page " + (field?.pageIndex + 1) + ")"}
-                    <span onClick={() => {
-                        handleRemovedTrackedAnnotation(_annotation)
-                    }} className="position-absolute top-0 start-100 translate-middle p-2 danger-text">
-                        <i className="bi bi-x-circle-fill"></i>
-                    </span>
-                </button>
-            }) : "No Annotation."}
+            {_annotations.length > 0 &&
+                <div className='input-group'>
+                    <input type="text" onChange={handleSearch} value={_keysearch} className="form-control" placeholder='Search by field key' aria-describedby="basic-addon2" />
+                    <Tooltip text="Clear search input." position="left">
+                        <div className="input-group-append">
+                            <span className='input-group-text' onClick={handleClearSearch}>
+                                <i className="bi bi-x-circle-fill" id="basic-addon2"></i>
+                            </span>
+                        </div>
+                    </Tooltip>
+                </div>
+            }
+            {_annotations.length > 0 && <div className='d-grid gap-2 d-md-flex mb-2 mt-2'>Annotations:
+                <Tooltip text="Remove all annotations in the current files." position="left">
+                    <button className="btn btn-outline-danger btn-sm" onClick={handleRemovedAllTrackedAnnotation}>Remove All</button>
+                </Tooltip>
+            </div>}
+            <div className="d-grid gap-2 d-md-block">
+                {_annotations.length > 0 ? _annotationsFilteredList.map((_annotation) => {
+                    let field = _annotation.object as unknown as PdfWidgetAnnoObject
+                    return <button key={field.id} className="btn btn-outline-secondary position-relative mb-1 me-1" onClick={() => {
+                        handleSelectedTrackedAnnotation(_annotation)
+                    }}>
+                        {field.contents ? field.contents : field?.field.name}
+                        {"(p " + (field?.pageIndex + 1) + ")"}
+                        <span onClick={() => {
+                            handleRemovedTrackedAnnotation(_annotation)
+                        }} className="position-absolute top-0 start-100 translate-middle p-2 danger-text">
+                            <i className="bi bi-x-circle-fill"></i>
+                        </span>
+                    </button>
+                }) : "No Annotation."}
+            </div>
         </div>
     )
 }, () => { return true })

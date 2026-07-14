@@ -13,6 +13,14 @@ import { fetchJsonFromStorage, loginAnonymously } from '../../firebase.ts'
 
 let envChange: () => void = () => { }
 
+const beforeUnloadHandler = (event: Event) => {
+  // Recommended
+  event.preventDefault();
+
+  // Included for legacy support, e.g. Chrome/Edge < 119
+  event.returnValue = true;
+};
+
 export const HomeBuildForm: FC = () => {
   const [pageType, setPageType] = useState<string>('loading');
   const [form, setForm] = useState<FormSu | null>(null);
@@ -20,6 +28,7 @@ export const HomeBuildForm: FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const timerAutoFrom = useRef(0)
   const [activeMode, setActiveMode] = useState<string | null>('build');
+  const dirtyRef = useRef<boolean>(false)
 
   useEffect(() => {
 
@@ -99,18 +108,39 @@ export const HomeBuildForm: FC = () => {
           const result = mergeFormUpdate(form, customEvent.detail)
 
           Object.assign(form, result)
-          setForm({... form})
+          setForm({ ...form })
           await updateForm(FormSuSchema.parse(form), formId)
           window.dispatchEvent(new CustomEvent(EVENT_FORMSUSCHEMACHANGESUCCESSFULLY, { detail: form }));
-        }, 1000)
+        }, 500)
 
       }
       window.addEventListener(EVENT_FORMSUSCHEMACHANGE, envChange);
     }
   }, [formId])
 
-  const handleChangeModeOfBuilder = useCallback((mode: string): void => {
+  const handleDirty = useCallback((dirty: boolean) => {
+    dirtyRef.current = dirty
+
+    window.removeEventListener("beforeunload", beforeUnloadHandler);
+    if (dirty) {
+      window.addEventListener("beforeunload", beforeUnloadHandler);
+    }
+
+  }, [])
+
+  const handleChangeModeOfBuilder = useCallback((mode: string): boolean => {
+
+    if (dirtyRef.current) {
+      if (confirm("Would you save your data before leaving out? You won't be able to roll back or recover them after this.") === true) {
+        return false;
+      } else {
+        dirtyRef.current = false;
+        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      }
+    }
     setActiveMode(mode)
+
+    return true
   }, [])
   const handleChangeSettingForm = useCallback((settings: Submission): void => {
     console.log('settings', settings)
@@ -144,7 +174,7 @@ export const HomeBuildForm: FC = () => {
               {activeMode == 'preview' && form ? <Preview formId={formId} form={form} /> : null}
             </div></div>
           </div>
-          {activeMode == 'pdf-build' ? <div className="container-fluid"><PDFBuilder form={form} formId={formId} /></div> : null}
+          {activeMode == 'pdf-build' ? <div className="container-fluid"><PDFBuilder form={form} formId={formId} onDirty={handleDirty} /></div> : null}
         </>
       }
       break;

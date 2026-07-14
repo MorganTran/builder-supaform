@@ -83,6 +83,7 @@
     color: #495057;
     background-color: #fff;
     border-color: #dee2e6 #dee2e6 #fff;
+    pointer-events: none;
 }
 
 .copy-btn {
@@ -208,7 +209,63 @@ div[data-epdf-i="main-toolbar"] {
     border-radius: 4px;
 }
 
-.container-field-list button {
-    margin-right: 5px;
-    margin-bottom: 5px;
+/* Container for the button and tooltip */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Base styling for the tooltip box */
+.tooltip-box {
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  
+  /* Smooth fade-in effect */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+/* Show tooltip on hover */
+.tooltip-container:hover .tooltip-box {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- Positioning Classes --- */
+
+/* Top Position */
+.tooltip-top {
+  bottom: 125%; /* Places it above the button */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Bottom Position */
+.tooltip-bottom {
+  top: 125%; /* Places it below the button */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Left Position */
+.tooltip-left {
+  top: 50%;
+  right: 110%;
+  transform: translateY(-50%);
+}
+
+/* Right Position */
+.tooltip-right {
+  top: 50%;
+  left: 110%;
+  transform: translateY(-50%);
 }
