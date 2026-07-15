@@ -1,4 +1,5 @@
 import { type FormSu, type Field } from '../../types/Form.ts'
+import _ from 'lodash'
 import { TEXT_TYPES_PDFFORM, CHECKBOX_TYPES_PDFFORM, RADIO_TYPES_PDFFORM, SUBFIELD_PDFFORM, IMAGE_TYPES_PDFFORM, ENUM_FORMPDFFIELDTYPE } from '../../types/Consts.ts'
 
 export function cloneFormObject(originalForm: FormSu) {
@@ -74,4 +75,43 @@ export function mappingFormComponentFieldsAndPDFFields(components: Record<string
     }
 
     return _fields
+}
+
+export function fillPDFFormBySubmission(form: FormSu, data: Record<string, any>): Record<string, any> {
+  const convertedData: Record<string, string> = {}
+  const fields = mappingFormComponentFieldsAndPDFFields(form.components)
+  
+  for (let index = 0; index < fields.length; index++) {
+    const field = fields[index];
+    let value;
+    switch (field.type) {
+      case ENUM_FORMPDFFIELDTYPE.TEXTFIELD:
+
+        value = data[field.key]
+        // If the value is an object/array, stringify it; otherwise, use standard string conversion
+        const stringValue = typeof value === 'object' && value !== null
+          ? JSON.stringify(value)
+          : String(value);
+        convertedData[field.key] = stringValue
+        break;
+      case ENUM_FORMPDFFIELDTYPE.CHECKBOX:
+
+        value = _.get(data, field.key)
+        if (typeof value == 'boolean') {
+          convertedData[field.key] = value ? 'Yes' : 'Off'
+        }
+
+        break;
+      case ENUM_FORMPDFFIELDTYPE.RADIOBUTTON:
+        value = _.get(data, field.compkey);
+        let subv = field.key.split(field.compkey+".")[1];
+        if (value == subv)
+          convertedData[field.key] = "Yes";
+        break;
+      default:
+        break;
+    }
+  }
+
+  return convertedData
 }

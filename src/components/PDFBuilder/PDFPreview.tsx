@@ -9,9 +9,7 @@ import {
 import { useEffect, useRef, memo, type FC, useCallback } from 'react'
 import { type FormSu } from '../../types/Form.ts'
 import { type Submission } from '@formio/react';
-import { mappingFormComponentFieldsAndPDFFields } from './Services.ts'
-import { ENUM_FORMPDFFIELDTYPE } from '../../types/Consts.ts'
-import _ from 'lodash'
+import {fillPDFFormBySubmission} from './Services.ts';
 
 interface PDFPreviewProps {
   form: FormSu,
@@ -19,47 +17,6 @@ interface PDFPreviewProps {
   submission: Submission | null
 }
 
-function fillPDFFormBySubmission(form: FormSu, data: Record<string, any>): Record<string, any> {
-  const convertedData: Record<string, string> = {}
-  const fields = mappingFormComponentFieldsAndPDFFields(form.components)
-  console.log("fillPDFFormBySubmission")
-  for (let index = 0; index < fields.length; index++) {
-    const field = fields[index];
-    let value;
-    switch (field.type) {
-      case ENUM_FORMPDFFIELDTYPE.TEXTFIELD:
-
-        value = data[field.key]
-        // If the value is an object/array, stringify it; otherwise, use standard string conversion
-        const stringValue = typeof value === 'object' && value !== null
-          ? JSON.stringify(value)
-          : String(value);
-        convertedData[field.key] = stringValue
-        break;
-      case ENUM_FORMPDFFIELDTYPE.CHECKBOX:
-
-        value = _.get(data, field.key)
-        if (typeof value == 'boolean') {
-          convertedData[field.key] = value ? 'Yes' : 'Off'
-        }
-
-        break;
-      case ENUM_FORMPDFFIELDTYPE.RADIOBUTTON:
-        value = _.get(data, field.compkey);
-        let subv = field.key.split(field.compkey+".")[1];
-        if (value == subv)
-          convertedData[field.key] = "Yes";
-        break;
-      case ENUM_FORMPDFFIELDTYPE.IMAGE:
-
-        break;
-      default:
-        break;
-    }
-  }
-
-  return convertedData
-}
 
 const PDFPreview: FC<PDFPreviewProps> = memo(({ form, formId, submission }) => {
   const documentIdRef = useRef<string>(formId + 'preview')
@@ -82,10 +39,8 @@ const PDFPreview: FC<PDFPreviewProps> = memo(({ form, formId, submission }) => {
     if (!formScope) return
     if (!formPlugin) return
 
-    // formPluginRef.current = formPlugin
     formScopeRef.current = formScope
 
-    // formScope.setFormFieldValues(1, )
 
     const syncValues = async () => {
       // using import.meta.env.DEV because in dev mode, cancelledRef.current is alway true for unmount callback called 2 times.
@@ -104,7 +59,7 @@ const PDFPreview: FC<PDFPreviewProps> = memo(({ form, formId, submission }) => {
     // syncValues()
 
     cleanupsRef.current.push(
-      formScope.onFormReady(async (nextFields) => {
+      formScope.onFormReady(async () => {
         // using import.meta.env.DEV because in dev mode, cancelledRef.current is alway true for unmount callback called 2 times.
         if (cancelledRef.current && !import.meta.env.DEV) return
         await syncValues()
