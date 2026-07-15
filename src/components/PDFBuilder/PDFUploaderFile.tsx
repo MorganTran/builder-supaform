@@ -4,6 +4,7 @@ import { PATH_PDF_STORAGE } from '../../types/Consts.ts'
 
 interface PDFUploaderProps {
     formId: string,
+    reupload:boolean
     onUploadNewPDF: (url_pdf: string) => void;
 }
 
@@ -14,7 +15,7 @@ interface UploadState {
     fileName: string | null;
 }
 
-const PDFUploader: FC<PDFUploaderProps> = ({ formId, onUploadNewPDF }) => {
+const PDFUploader: FC<PDFUploaderProps> = ({ formId, reupload, onUploadNewPDF }) => {
     const [state, setState] = useState<UploadState>({
         isLoading: false,
         error: null,
@@ -87,7 +88,7 @@ const PDFUploader: FC<PDFUploaderProps> = ({ formId, onUploadNewPDF }) => {
     };
 
     return (
-        <div className="pdf-uploader">
+        <div className={reupload ? "pdf-reuploader" :"pdf-uploader"}>
 
             <input
                 type="file"
@@ -101,7 +102,7 @@ const PDFUploader: FC<PDFUploaderProps> = ({ formId, onUploadNewPDF }) => {
 
             <label
                 htmlFor="pdf-file-upload"
-                className={`btn btn-primary d-inline-flex align-items-center ${state.isLoading ? 'disabled' : ''}`}
+                className={`btn btn-primary btn-sm d-inline-flex align-items-center ${state.isLoading ? 'disabled' : ''}`}
             >
                 {state.isLoading ? (
                     <>
@@ -111,16 +112,14 @@ const PDFUploader: FC<PDFUploaderProps> = ({ formId, onUploadNewPDF }) => {
                 ) : (
                     <>
                         <i className="bi bi-upload me-2"></i>
-                        Upload PDF
+                        {reupload ? "Reupload PDF" : "Upload PDF"}
                     </>
                     )}
             </label>
 
-            {state.isLoading && <p>Uploading...</p>}
-
             {state.error && <p className="error">{state.error}</p>}
 
-            {state.success && (
+            {state.success && !reupload && (
                 <p className="success">
                     Successfully uploaded: {state.fileName}
                 </p>

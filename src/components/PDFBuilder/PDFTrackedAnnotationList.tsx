@@ -15,7 +15,6 @@ interface FieldsListProps {
 }
 
 const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer }) => {
-    console.log("PDFTrackedAnnotationList")
     const [_annotations, setAnnotations] = useState<TrackedAnnotation[]>([])
     const [_keysearch, setKeysearch] = useState<string>("")
 
@@ -78,6 +77,13 @@ const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer 
     const handleRemovedAllTrackedAnnotation = useCallback(async () => {
         if (confirm("Are you sure you want to delete all annotations? You won't be able to roll back or recover them after this.") === true)
             annotationApiRef.current?.deleteAllAnnotations()
+            // if (annotationApiRef.current) {
+            //     let annots: TrackedAnnotation[] = annotationApiRef.current?.getAnnotations();
+            //     annots?.forEach((annot: TrackedAnnotation) => {
+            //         console.log('handleRemovedAllTrackedAnnotation', annot)
+            //         annotationApiRef.current?.deleteAnnotation(annot.object.pageIndex, annot.object.id)
+            //     })
+            // }
     }, [])
 
     const handleSearch = useCallback((ev: ChangeEvent<HTMLInputElement>) => {
@@ -111,7 +117,7 @@ const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer 
             <div className="d-grid gap-2 d-md-block">
                 {_annotations.length > 0 ? _annotationsFilteredList.map((_annotation) => {
                     let field = _annotation.object as unknown as PdfWidgetAnnoObject
-                    return <button key={field.id} className="btn btn-outline-secondary position-relative mb-1 me-1" onClick={() => {
+                    return <button key={field.id} className="btn btn-sm btn-outline-secondary position-relative mb-1 me-1" onClick={() => {
                         handleSelectedTrackedAnnotation(_annotation)
                     }}>
                         {field.contents ? field.contents : field?.field.name}

@@ -209,6 +209,10 @@ div[data-epdf-i="main-toolbar"] {
     border-radius: 4px;
 }
 
+.pdf-reuploader{
+    float: right;
+}
+
 /* Container for the button and tooltip */
 .tooltip-container {
   position: relative;

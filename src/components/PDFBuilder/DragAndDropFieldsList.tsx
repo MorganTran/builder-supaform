@@ -160,7 +160,7 @@ const DragAndDropFieldsList: FC<DragAndDropFieldsListProps> = memo(({ form, form
                 </div>
             }
             {_fieldsFilteredList.map((field) => {
-                return <button key={field.key} className="btn btn-outline-primary mb-1 me-1" onClick={() => {
+                return <button key={field.key} className="btn btn-sm btn-outline-primary mb-1 me-1" onClick={() => {
                     handleCreatedNewFormField(field)
                 }}>
                     {field.key}

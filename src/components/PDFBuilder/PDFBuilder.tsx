@@ -27,6 +27,7 @@ interface PDFBuilderProps {
 const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
   const registryPDFViewerRef = useRef<PluginRegistry>(null)
   const [urlPdf, setUrlPdf] = useState(form?.meta?.pdf_url)
+  const [reuploading, setReuploading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success'>('idle')
@@ -50,9 +51,15 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
   }
 
   const handleUploadNewPdf = useCallback(async (url_pdf: string) => {
-    setUrlPdf(url_pdf)
-    setLoading(false)
-    window.dispatchEvent(new CustomEvent(EVENT_FORMSUSCHEMACHANGE, { detail: { meta: { "pdf_url": url_pdf } } }));
+    registryPDFViewerRef.current = null
+    cleanupsRef.current.forEach((cleanup) => cleanup())
+    setLoading(true)
+    setReuploading(true)
+    setTimeout(() => {
+      setUrlPdf(url_pdf)
+      setReuploading(false)
+      window.dispatchEvent(new CustomEvent(EVENT_FORMSUSCHEMACHANGE, { detail: { meta: { "pdf_url": url_pdf } } }));
+    }, 500)
   }, [])
 
   const handleSavePdf = useCallback(async () => {
@@ -77,7 +84,7 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
     setIsSaving(false)
   }, [])
 
-  const handlePDFViewerOnready = useCallback((registry: PluginRegistry) => {
+  const handlePDFViewerOnready = useCallback((registry: PluginRegistry) => {console.log('handlePDFViewerOnready', registry);
     // using import.meta.env.DEV because in dev mode, cancelledRef.current is alway true for unmount callback called 2 times.
     if (cancelledRef.current && !import.meta.env.DEV) return
 
@@ -102,8 +109,7 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
         setLoading(false)
 
         cleanupsRef.current.push(annotationPlugin.onAnnotationEvent((event) => {
-          console.log("onAnnotationEvent", event)
-          if(event.type == "loaded") return; // ignore at first loaded annotation
+          if (event.type == "loaded") return; // ignore at first loaded annotation
 
           dirtyRef.current = true
           onDirty(true)
@@ -122,12 +128,13 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
 
   return (
     <div className="row">
+      {!reuploading && <>
       {urlPdf ? <>
         <div className='col-2'>
           {!loading && <div className='container-field-list'>
             <div>
               <Tooltip text='Upload this file to the cloud.' position='right'>
-                <button onClick={handleSavePdf} className={'btn btn-primary'}>
+                <button onClick={handleSavePdf} className={'btn btn-sm btn-primary'}>
                   {isSaving
                     ? 'Saving...'
                     : saveStatus === 'success'
@@ -135,6 +142,7 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
                       : 'Save'}
                 </button>
               </Tooltip>
+              <PDFUploader formId={formId} reupload={true} onUploadNewPDF={handleUploadNewPdf} />
             </div>
             {registryPDFViewerRef.current && <DragAndDropFieldsList form={form} formId={formId} registryPDFViewer={registryPDFViewerRef.current} />}
           </div>}
@@ -178,8 +186,9 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
           {registryPDFViewerRef.current && <PDFTrackedAnnotationList registryPDFViewer={registryPDFViewerRef.current} />}
         </div>
       </> :
-        <PDFUploader formId={formId} onUploadNewPDF={handleUploadNewPdf} />
+        <PDFUploader formId={formId} reupload={false} onUploadNewPDF={handleUploadNewPdf} />
       }
+      </>}
     </div>
   );
 })
