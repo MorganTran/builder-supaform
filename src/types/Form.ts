@@ -54,5 +54,5 @@ export interface Field {
     type: number,
     key: string,
     compkey: string,
-    component: object
+    component: Record<string, any>
 }
