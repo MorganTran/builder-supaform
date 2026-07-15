@@ -23,6 +23,7 @@ interface DragAndDropFieldsListProps {
 
 const DragAndDropFieldsList: FC<DragAndDropFieldsListProps> = memo(({ form, formId, registryPDFViewer }) => {
     const [fields, setFields] = useState<Field[]>([])
+    const [upsupportedFields, setUpsupportedFields] = useState<Record<string, any>[]>([])
 
     const annotationApiRef = useRef<AnnotationApi | null>(null)
     const scrollApiRef = useRef<ScrollApi | null>(null)
@@ -66,14 +67,25 @@ const DragAndDropFieldsList: FC<DragAndDropFieldsListProps> = memo(({ form, form
         scrollApiRef.current = scrollPlugin
 
         scrollPlugin?.onPageChange((event) => {
-            console.log(`Doc: ${event.documentId}`);
-            console.log(`Current Page: ${event.pageNumber}`);
-            console.log(`Total Pages: ${event.totalPages}`);
             currentPageNumberPDFRef.current = event.pageNumber - 1
         })
 
         _fields = mappingFormComponentFieldsAndPDFFields(form.components)
         setFields(_fields)
+
+        const _upsupportedFields = form.components.filter((component:Record<string, any>)=>{
+            let _exists_field = false
+            _fields.some((_field:Field)=>{
+                if(_field.component?.key == component.key){
+                    _exists_field = true
+                    return false
+                }
+            })
+
+            return !_exists_field
+        })
+
+        setUpsupportedFields(_upsupportedFields)
 
         return () => {
             cleanups.forEach((cleanup) => cleanup())
@@ -134,7 +146,7 @@ const DragAndDropFieldsList: FC<DragAndDropFieldsListProps> = memo(({ form, form
 
     return (
         <div className='container-drap-drop-fields-list'>
-            <div className='my-2'>Form Fields:</div>
+            <div className='my-2'>Drap-drop Form Fields:</div>
             {fields.length > 0 &&
                 <div className='input-group mb-2'>
                     <input type="text" onChange={handleSearch} value={_keysearch} className="form-control" placeholder='Search by field key' aria-describedby="basic-addon2" />
@@ -153,6 +165,12 @@ const DragAndDropFieldsList: FC<DragAndDropFieldsListProps> = memo(({ form, form
                 }}>
                     {field.key}
                 </button>
+            })}
+            <div className='my-2'>Unsupported Drap-drop Fields:</div>
+            {upsupportedFields.map((component:Record<string, any>) => {
+                return <span key={component.key} className="badge text-bg-secondary mb-1 me-1">
+                    {component.key}
+                </span>
             })}
         </div>
     )
