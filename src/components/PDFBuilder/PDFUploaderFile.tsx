@@ -2,9 +2,11 @@ import React, { useState, type FC } from 'react';
 import { uploadFilePDF } from '../../firebase.ts'
 import { PATH_PDF_STORAGE } from '../../types/Consts.ts'
 
+
 interface PDFUploaderProps {
     formId: string,
     reupload:boolean
+    onPreUploadNewPDF: () => Promise<boolean>;
     onUploadNewPDF: (url_pdf: string) => void;
 }
 
@@ -15,7 +17,7 @@ interface UploadState {
     fileName: string | null;
 }
 
-const PDFUploader: FC<PDFUploaderProps> = ({ formId, reupload, onUploadNewPDF }) => {
+const PDFUploader: FC<PDFUploaderProps> = ({ formId, reupload, onPreUploadNewPDF, onUploadNewPDF }) => {
     const [state, setState] = useState<UploadState>({
         isLoading: false,
         error: null,
@@ -24,6 +26,9 @@ const PDFUploader: FC<PDFUploaderProps> = ({ formId, reupload, onUploadNewPDF })
     });
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(!await onPreUploadNewPDF()){
+            return;
+        }
         const file = event.target.files?.[0];
 
         if (!file) {

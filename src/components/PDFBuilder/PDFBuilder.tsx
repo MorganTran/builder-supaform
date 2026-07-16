@@ -5,7 +5,8 @@ import {
   ZoomMode,
   ExportPlugin,
   type PluginRegistry,
-  type AnnotationPlugin
+  type AnnotationPlugin,
+  type AnnotationTransferItem
 } from '@embedpdf/react-pdf-viewer'
 import { useEffect, useRef, useCallback, type FC, useState, memo } from 'react'
 import { type FormSu } from '../../types/Form.ts'
@@ -16,6 +17,8 @@ import { uploadFilePDF } from '../../firebase.ts'
 import { PATH_PDF_STORAGE } from '../../types/Consts.ts'
 import { EVENT_FORMSUSCHEMACHANGE } from '../../types/Consts.ts'
 import Tooltip from '../Tooltip.tsx'
+import { type AnnotationApi } from '../../types/PdfPlugin.ts'
+import { modal, type DataRenderModal, type ButtonRender } from '../../components/ConfirmModal.tsx'
 
 interface PDFBuilderProps {
   form: FormSu,
@@ -35,6 +38,8 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
   const cancelledRef = useRef<boolean>(false)
   const dirtyRef = useRef<boolean>(false)
   const cleanupsRef = useRef<Array<() => void>>([])
+  const annotationApiRef = useRef<AnnotationApi | null>(null)
+  const oldAnnotationTransferItems = useRef<AnnotationTransferItem[] | null | undefined>(null)
 
   const getExportScope = async () => {
     const registry = registryPDFViewerRef.current
@@ -84,7 +89,27 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
     setIsSaving(false)
   }, [])
 
-  const handlePDFViewerOnready = useCallback((registry: PluginRegistry) => {console.log('handlePDFViewerOnready', registry);
+  const handlePreUploadNewPDF = useCallback(async () => {
+    if (urlPdf && annotationApiRef.current && annotationApiRef.current?.getAnnotations().length > 0) {
+      const result: ButtonRender = await modal({
+        title: "",
+        body: "Do you want to keep your all old annotations?",
+        show: true,
+        buttons: [
+          { class: "btn-secondary", text: "No", key: "no" },
+          { class: "btn-primary", text: "Yes", key: "yes" }
+        ]
+      } as DataRenderModal)
+
+      if (result.key == 'yes') {
+        oldAnnotationTransferItems.current = await annotationApiRef.current?.exportAnnotations().toPromise()
+      }
+    }
+
+    return true
+  }, [])
+
+  const handlePDFViewerOnready = useCallback((registry: PluginRegistry) => {
     // using import.meta.env.DEV because in dev mode, cancelledRef.current is alway true for unmount callback called 2 times.
     if (cancelledRef.current && !import.meta.env.DEV) return
 
@@ -92,6 +117,8 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
 
     const annotationPlugin = registry?.getPlugin<AnnotationPlugin>('annotation')?.provides()
     if (!annotationPlugin) return
+
+    annotationApiRef.current = annotationPlugin
 
     const formPlugin = registry?.getPlugin<FormPlugin>('form')?.provides()
     const formScope = formPlugin?.forDocument(formId)
@@ -103,17 +130,27 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
 
     formScopeRef.current = formScope
 
+    const unloadingCallback = () => {
+      setLoading(false)
+
+      cleanupsRef.current.push(annotationPlugin.onAnnotationEvent((event) => {
+        if (event.type == "loaded") return; // ignore at first loaded annotation
+
+        dirtyRef.current = true
+        onDirty(true)
+      }))
+    }
+
     cleanupsRef.current.push(
       formScope.onFormReady(async () => {
         // console.log("fields", nextFields, await formScope?.getPageFormAnnoWidgets(0).toPromise())
-        setLoading(false)
-
-        cleanupsRef.current.push(annotationPlugin.onAnnotationEvent((event) => {
-          if (event.type == "loaded") return; // ignore at first loaded annotation
-
-          dirtyRef.current = true
-          onDirty(true)
-        }))
+        if (!oldAnnotationTransferItems.current) {
+          unloadingCallback()
+        } else {
+          annotationApiRef.current?.importAnnotations(oldAnnotationTransferItems.current)
+          oldAnnotationTransferItems.current = null
+          unloadingCallback()
+        }
       }),
     )
   }, []);
@@ -129,65 +166,65 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
   return (
     <div className="row">
       {!reuploading && <>
-      {urlPdf ? <>
-        <div className='col-2'>
-          {!loading && <div className='container-field-list'>
-            <div>
-              <Tooltip text='Upload this file to the cloud.' position='right'>
-                <button onClick={handleSavePdf} className={'btn btn-sm btn-primary'}>
-                  {isSaving
-                    ? 'Saving...'
-                    : saveStatus === 'success'
-                      ? 'Saved!'
-                      : 'Save'}
-                </button>
-              </Tooltip>
-              <PDFUploader formId={formId} reupload={true} onUploadNewPDF={handleUploadNewPdf} />
-            </div>
-            {registryPDFViewerRef.current && <DragAndDropFieldsList form={form} formId={formId} registryPDFViewer={registryPDFViewerRef.current} />}
-          </div>}
-        </div>
-        <div className='col-8'>
-          <div className="pdf-builder-container">
-            <PDFViewer
-              onReady={handlePDFViewerOnready}
-              config={{
-                zoom: {
-                  defaultZoomLevel: ZoomMode.FitWidth,
-                  minZoom: 0.5,
-                  maxZoom: 3.0
-                },
-                documentManager: {
-                  initialDocuments: [
-                    {
-                      url: urlPdf,
-                      documentId: formId,
-                    },
-                  ],
-                },
-                // disabledCategories: ["zoom", "zoom-in", "zoom-out", "zoom-fit-page", "zoom-fit-width", "zoom-marquee", "zoom-level",
-                //   "annotation", "annotation-markup", "annotation-highlight", "annotation-underline", "annotation-strikeout", "annotation-squiggly", "annotation-ink", "annotation-text", "annotation-stamp",
-                //   "form", "form-textfield", "form-checkbox", "form-radio", "form-select", "form-listbox", "form-fill-mode",
-                //   "annotation-shape", "annotation-rectangle", "annotation-circle", "annotation-line", "annotation-arrow", "annotation-polygon", "annotation-polyline",
-                //   "redaction", "redaction-area", "redaction-text", "redaction-apply", "redaction-clear",
-                //   "document", "document-open", "document-close", "document-print", "document-capture", "document-export", "document-fullscreen", "document-protect",
-                //   "page", "spread", "rotate", "scroll", "navigation",
-                //   "panel", "panel-sidebar", "panel-search", "panel-comment",
-                //   "tools", "pan", "pointer", "capture",
-                //   "selection", "selection-copy",
-                //   "history", "history-undo", "history-redo",
-                //   "insert", "insert-rubber-stamp", "insert-signature", "insert-image",
-                //   "security", "security-unlock-overlay"]
-              }}
-            />
+        {urlPdf ? <>
+          <div className='col-2'>
+            {!loading && <div className='container-field-list'>
+              <div>
+                <Tooltip text='Upload this file to the cloud.' position='right'>
+                  <button onClick={handleSavePdf} className={'btn btn-sm btn-primary'}>
+                    {isSaving
+                      ? 'Saving...'
+                      : saveStatus === 'success'
+                        ? 'Saved!'
+                        : 'Save'}
+                  </button>
+                </Tooltip>
+                <PDFUploader formId={formId} reupload={true} onPreUploadNewPDF={handlePreUploadNewPDF} onUploadNewPDF={handleUploadNewPdf} />
+              </div>
+              {registryPDFViewerRef.current && <DragAndDropFieldsList form={form} formId={formId} registryPDFViewer={registryPDFViewerRef.current} />}
+            </div>}
           </div>
-        </div>
-        <div className='col-2'>
-          {registryPDFViewerRef.current && <PDFTrackedAnnotationList registryPDFViewer={registryPDFViewerRef.current} />}
-        </div>
-      </> :
-        <PDFUploader formId={formId} reupload={false} onUploadNewPDF={handleUploadNewPdf} />
-      }
+          <div className='col-8'>
+            <div className="pdf-builder-container">
+              <PDFViewer
+                onReady={handlePDFViewerOnready}
+                config={{
+                  zoom: {
+                    defaultZoomLevel: ZoomMode.FitWidth,
+                    minZoom: 0.5,
+                    maxZoom: 3.0
+                  },
+                  documentManager: {
+                    initialDocuments: [
+                      {
+                        url: urlPdf,
+                        documentId: formId,
+                      },
+                    ],
+                  },
+                  // disabledCategories: ["zoom", "zoom-in", "zoom-out", "zoom-fit-page", "zoom-fit-width", "zoom-marquee", "zoom-level",
+                  //   "annotation", "annotation-markup", "annotation-highlight", "annotation-underline", "annotation-strikeout", "annotation-squiggly", "annotation-ink", "annotation-text", "annotation-stamp",
+                  //   "form", "form-textfield", "form-checkbox", "form-radio", "form-select", "form-listbox", "form-fill-mode",
+                  //   "annotation-shape", "annotation-rectangle", "annotation-circle", "annotation-line", "annotation-arrow", "annotation-polygon", "annotation-polyline",
+                  //   "redaction", "redaction-area", "redaction-text", "redaction-apply", "redaction-clear",
+                  //   "document", "document-open", "document-close", "document-print", "document-capture", "document-export", "document-fullscreen", "document-protect",
+                  //   "page", "spread", "rotate", "scroll", "navigation",
+                  //   "panel", "panel-sidebar", "panel-search", "panel-comment",
+                  //   "tools", "pan", "pointer", "capture",
+                  //   "selection", "selection-copy",
+                  //   "history", "history-undo", "history-redo",
+                  //   "insert", "insert-rubber-stamp", "insert-signature", "insert-image",
+                  //   "security", "security-unlock-overlay"]
+                }}
+              />
+            </div>
+          </div>
+          <div className='col-2'>
+            {registryPDFViewerRef.current && <PDFTrackedAnnotationList registryPDFViewer={registryPDFViewerRef.current} />}
+          </div>
+        </> :
+          <PDFUploader formId={formId} reupload={false} onPreUploadNewPDF={handlePreUploadNewPDF} onUploadNewPDF={handleUploadNewPdf} />
+        }
       </>}
     </div>
   );
