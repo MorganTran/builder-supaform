@@ -66,6 +66,8 @@ export const INIT_TEMPLATEFORM_DEFINITION: FormSu = {
 
 export const EVENT_FORMSUSCHEMACHANGE = "onFormSuSchemaChange"
 export const EVENT_FORMSUSCHEMACHANGESUCCESSFULLY = "onFormSuSchemaChangeSuccessfully"
+export const EVENT_MODAL_RENDER = "onModalRender"
+export const EVENT_MODAL_ACTION = "onModalAction"
 
 
 export const ENUM_FORMPDFFIELDTYPE = {

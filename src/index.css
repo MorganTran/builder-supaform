@@ -273,3 +273,7 @@ div[data-epdf-i="main-toolbar"] {
   left: 110%;
   transform: translateY(-50%);
 }
+
+.modal{
+    background-color: rgba(0, 0, 0, 0.8);
+}
