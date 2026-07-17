@@ -9,6 +9,7 @@ import {
 } from '@embedpdf/react-pdf-viewer'
 import { type AnnotationApi, type ScrollApi } from '../../types/PdfPlugin.ts'
 import Tooltip from '../Tooltip.tsx'
+import { modal, type DataRenderModal, type ButtonRender } from '../../components/ConfirmModal.tsx'
 
 interface FieldsListProps {
     registryPDFViewer: PluginRegistry
@@ -75,7 +76,17 @@ const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer 
     }, [])
 
     const handleRemovedAllTrackedAnnotation = useCallback(async () => {
-        if (confirm("Are you sure you want to delete all annotations? You won't be able to roll back or recover them after this.") === true)
+        const result: ButtonRender = await modal({
+            title: "",
+            body: "Are you sure you want to delete all annotations? You won't be able to roll back or recover them after this.",
+            show: true,
+            buttons: [
+                { class: "btn-secondary", text: "No", key: "no" },
+                { class: "btn-primary", text: "Yes", key: "yes" }
+            ]
+        } as DataRenderModal)
+
+        if (result.key == 'yes') {
             annotationApiRef.current?.deleteAllAnnotations()
             // if (annotationApiRef.current) {
             //     let annots: TrackedAnnotation[] = annotationApiRef.current?.getAnnotations();
@@ -84,6 +95,7 @@ const PDFTrackedAnnotationList: FC<FieldsListProps> = memo(({ registryPDFViewer 
             //         annotationApiRef.current?.deleteAnnotation(annot.object.pageIndex, annot.object.id)
             //     })
             // }
+        }
     }, [])
 
     const handleSearch = useCallback((ev: ChangeEvent<HTMLInputElement>) => {
