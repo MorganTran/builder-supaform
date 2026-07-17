@@ -8,7 +8,7 @@ import { EVENT_FORMSUSCHEMACHANGE, EVENT_FORMSUSCHEMACHANGESUCCESSFULLY } from '
 interface HeaderProps {
   form: FormSu,
   formId: string,
-  onChangeModeOfFormBuilder: (id: string) => boolean;
+  onChangeModeOfFormBuilder: (id: string) => Promise<boolean>;
 }
 
 interface LabelUpdateDateProps {
@@ -42,8 +42,8 @@ export const Header: FC<HeaderProps> = memo(({ form, onChangeModeOfFormBuilder }
   const [activeButton, setActiveButton] = useState<string | null>('build');
   const [name, setName] = useState<string | null>(form.meta.display_name);
 
-  const handleButtonClick = useCallback((mode: string): void => {
-    if (onChangeModeOfFormBuilder(mode))
+  const handleButtonClick = useCallback(async (mode: string): Promise<void> => {
+    if (await onChangeModeOfFormBuilder(mode))
       setActiveButton(mode);
   }, []);
 

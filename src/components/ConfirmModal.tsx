@@ -19,7 +19,6 @@ export type DataRenderModal = z.infer<typeof DataRenderModalSchema>;
 export type ButtonRender = z.infer<typeof ButtonRenderSchema>;
 
 export const modal = (dataRender: DataRenderModal): Promise<ButtonRender> => {
-    console.log('modal', dataRender)
     window.dispatchEvent(new CustomEvent(EVENT_MODAL_RENDER, { detail: dataRender }));
 
     return new Promise((resolve) => {

@@ -5,11 +5,13 @@ import { Setting } from './Setting.tsx'
 import { Preview } from './Preview.tsx'
 import FormBuilderIO from './FormBuilderIO.tsx'
 import PDFBuilder from '../PDFBuilder/PDFBuilder.tsx'
+import { type PDFBuilderRef } from '../PDFBuilder/PDFBuilder.tsx'
 import { updateForm, mergeFormUpdate } from './Services.ts'
 import { type FormSu, FormSuSchema } from '../../types/Form.ts'
 import { PATH_FORM_STORAGE, PATH_TEMPLATE_STORAGE, PREFIX_TEMPLATE_ID, EVENT_FORMSUSCHEMACHANGE, EVENT_FORMSUSCHEMACHANGESUCCESSFULLY } from '../../types/Consts.ts'
 import { type User } from 'firebase/auth';
 import { fetchJsonFromStorage, loginAnonymously } from '../../firebase.ts'
+import { modal, type DataRenderModal, type ButtonRender } from '../../components/ConfirmModal.tsx'
 
 let envChange: () => void = () => { }
 
@@ -29,6 +31,7 @@ export const HomeBuildForm: FC = () => {
   const timerAutoFrom = useRef(0)
   const [activeMode, setActiveMode] = useState<string | null>('build');
   const dirtyRef = useRef<boolean>(false)
+  const pdfBuilderyRef = useRef<PDFBuilderRef>(null)
 
   useEffect(() => {
 
@@ -128,15 +131,24 @@ export const HomeBuildForm: FC = () => {
 
   }, [])
 
-  const handleChangeModeOfBuilder = useCallback((mode: string): boolean => {
+  const handleChangeModeOfBuilder = useCallback(async (mode: string): Promise<boolean> => {
 
     if (dirtyRef.current) {
-      if (confirm("Would you save your data before leaving out? You won't be able to roll back or recover them after this.") === true) {
-        return false;
-      } else {
-        dirtyRef.current = false;
-        window.removeEventListener("beforeunload", beforeUnloadHandler);
+      const result: ButtonRender = await modal({
+        title: "",
+        body: "Would you save your data before leaving out? You won't be able to roll back or recover them after this.",
+        show: true,
+        buttons: [
+          { class: "btn-secondary", text: "Discard Changes", key: "discard-changes" },
+          { class: "btn-primary", text: "Save Changes", key: "save-changes" }
+        ]
+      } as DataRenderModal)
+
+      if (result.key == 'save-changes') {
+        await pdfBuilderyRef.current?.handleSavePdf()
       }
+      dirtyRef.current = false;
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
     }
     setActiveMode(mode)
 
@@ -174,7 +186,7 @@ export const HomeBuildForm: FC = () => {
               {activeMode == 'preview' && form ? <Preview formId={formId} form={form} /> : null}
             </div></div>
           </div>
-          {activeMode == 'pdf-build' ? <div className="container-fluid"><PDFBuilder form={form} formId={formId} onDirty={handleDirty} /></div> : null}
+          {activeMode == 'pdf-build' ? <div className="container-fluid"><PDFBuilder ref={pdfBuilderyRef} form={form} formId={formId} onDirty={handleDirty} /></div> : null}
         </>
       }
       break;

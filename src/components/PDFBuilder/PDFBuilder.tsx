@@ -8,7 +8,7 @@ import {
   type AnnotationPlugin,
   type AnnotationTransferItem
 } from '@embedpdf/react-pdf-viewer'
-import { useEffect, useRef, useCallback, type FC, useState, memo } from 'react'
+import { useEffect, useRef, useCallback, type FC, useState, memo, type Ref, useImperativeHandle } from 'react'
 import { type FormSu } from '../../types/Form.ts'
 import PDFTrackedAnnotationList from './PDFTrackedAnnotationList.tsx'
 import DragAndDropFieldsList from './DragAndDropFieldsList.tsx'
@@ -23,11 +23,15 @@ import { modal, type DataRenderModal, type ButtonRender } from '../../components
 interface PDFBuilderProps {
   form: FormSu,
   formId: string,
+  ref?: Ref<PDFBuilderRef>;
   onDirty: (dirty: boolean) => void;
 }
 
+export interface PDFBuilderRef {
+  handleSavePdf: () => void;
+}
 
-const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
+const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty, ref }) => {
   const registryPDFViewerRef = useRef<PluginRegistry>(null)
   const [urlPdf, setUrlPdf] = useState(form?.meta?.pdf_url)
   const [reuploading, setReuploading] = useState(false)
@@ -147,9 +151,10 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
         if (!oldAnnotationTransferItems.current) {
           unloadingCallback()
         } else {
-          annotationApiRef.current?.importAnnotations(oldAnnotationTransferItems.current)
-          oldAnnotationTransferItems.current = null
-          unloadingCallback()
+          annotationApiRef.current?.importAnnotations(oldAnnotationTransferItems.current);
+          oldAnnotationTransferItems.current = null;
+          await handleSavePdf();
+          unloadingCallback();
         }
       }),
     )
@@ -162,6 +167,10 @@ const PDFBuilder: FC<PDFBuilderProps> = memo(({ form, formId, onDirty }) => {
       cleanupsRef.current.forEach((cleanup) => cleanup())
     }
   }, [])
+
+  useImperativeHandle(ref, () => ({
+    handleSavePdf,
+  }));
 
   return (
     <div className="row">
