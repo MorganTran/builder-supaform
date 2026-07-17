@@ -3,6 +3,7 @@ import { Form, type FormType, type Submission } from '@formio/react';
 import { Webform } from '@formio/js';
 import { FeedbackFormSchema } from '../../types/Form.ts'
 import { saveFeedbackForm } from './Services'
+import { modal, type DataRenderModal, type ButtonRender } from '../../components/ConfirmModal.tsx'
 
 const formFeedbackDefinition: FormType = {
     "display": "form",
@@ -42,7 +43,7 @@ const formFeedbackDefinition: FormType = {
     ]
 }
 
-const beforeUnloadHandler = (event:Event) => {
+const beforeUnloadHandler = (event: Event) => {
     // Recommended
     event.preventDefault();
 
@@ -57,9 +58,18 @@ export const FeedbackPanel: FC = memo(() => {
     const loading = useRef<boolean>(false)
     const formInstance = useRef<Webform | null>(null);
     const keyform = useRef<string>(Date.now() + "")
-    const handleButtonClick = useCallback((v: boolean): void => {
+    const handleButtonClick = useCallback(async (v: boolean): Promise<void> => {
         if (dirty.current && !v) {
-            if (confirm("Would you complete your feedback before leaving out?") == true) {
+            const result: ButtonRender = await modal({
+                title: "",
+                body: "Would you complete your feedback before leaving out?",
+                show: true,
+                buttons: [
+                    { class: "btn-secondary", text: "No", key: "no" },
+                    { class: "btn-primary", text: "Yes", key: "yes" }
+                ]
+            } as DataRenderModal)
+            if (result.key == 'yes') {
                 return
             }
         }
@@ -92,7 +102,7 @@ export const FeedbackPanel: FC = memo(() => {
             formInstance.current.redraw()
         setShowThankyou(true)
 
-        setTimeout(()=>{
+        setTimeout(() => {
             setShowThankyou(false)
             setShowPanel(false)
             window.removeEventListener("beforeunload", beforeUnloadHandler)
